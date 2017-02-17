@@ -9,7 +9,7 @@
       "allowed_methods": ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"],
       "allowed_origin": "*"
     },
-    "app_function": "my_app.app"
+    "app_function": "my_app.app",
     "keep_warm": true,
     "exclude": ["*.gz", "*.dat", "*.zip"],
     "memory_size": 128,
