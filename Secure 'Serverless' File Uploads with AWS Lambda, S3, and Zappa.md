@@ -4,12 +4,6 @@
 ![Serverless File Upload Architecture Diagram](	
 https://s3.amazonaws.com/stratospark/images/serverless_file_upload.jpg)
 
-**Lambda Code available: https://github.com/stratospark/zappa-s3-signature **
-
-**React Fine Uploader demo available: https://github.com/stratospark/react-fineuploader-s3-demo **
-
-**Live demo available: https://stratospark-serverless-uploader.s3.amazonaws.com/index.html **
-
 As I've been experimenting with [AWS Lambda](https://aws.amazon.com/lambda/), I've found the need to accept file uploads from the browser in order to kick off asynchronous Lambda functions. For example, allowing a user to directly upload in an S3 bucket from the browser, which would trigger a Lambda function for image processing.
 
 I decided to use the [Zappa](https://github.com/Miserlou/Zappa) framework, as it allows me to leverage my existing Python WSGI experience, while also providing a number of **awesome** features such as:
