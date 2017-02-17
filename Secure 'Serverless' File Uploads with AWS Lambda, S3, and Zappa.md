@@ -24,65 +24,73 @@ Here are the steps I took to create a secure file upload system in the cloud:
 * Follow [these instructions](https://github.com/Miserlou/Zappa/blob/master/docs/domain_with_free_ssl_dns.md) to create a Route 53 Hosted Zone, update your domain DNS, and generate a Let's Encrypt account.key
 * Create S3 bucket to hold uploaded files, with the policy below. **Note: do not use periods in the bucket name if you want to be able to use SSL, as [explained here](http://stackoverflow.com/questions/39396634/fine-uploader-upload-to-s3-over-https-error)**
 
-    {
-        "Version": "2008-10-17",
-        "Id": "policy",
-        "Statement": [
-            {
-                "Sid": "allow-public-put",
-                "Effect": "Allow",
-                "Principal": {
-                    "AWS": "*"
-                },
-                "Action": "s3:PutObject",
-                "Resource": "arn:aws:s3:::BUCKET_NAME_HERE/*"
-            }
-        ]
-    }
+```
+{
+    "Version": "2008-10-17",
+    "Id": "policy",
+    "Statement": [
+        {
+            "Sid": "allow-public-put",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Action": "s3:PutObject",
+            "Resource": "arn:aws:s3:::BUCKET_NAME_HERE/*"
+        }
+    ]
+}
+```
 
 * Activate CORS for the S3 bucket. You may want to update the AllowedOrigin tag to limit the domains you are allowed to upload from.
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
-        <CORSRule>
-            <AllowedOrigin>*</AllowedOrigin>
-            <AllowedMethod>POST</AllowedMethod>
-            <AllowedMethod>PUT</AllowedMethod>
-            <AllowedMethod>DELETE</AllowedMethod>
-            <MaxAgeSeconds>3000</MaxAgeSeconds>
-            <ExposeHeader>ETag</ExposeHeader>
-            <AllowedHeader>*</AllowedHeader>
-        </CORSRule>
-    </CORSConfiguration>
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+    <CORSRule>
+        <AllowedOrigin>*</AllowedOrigin>
+        <AllowedMethod>POST</AllowedMethod>
+        <AllowedMethod>PUT</AllowedMethod>
+        <AllowedMethod>DELETE</AllowedMethod>
+        <MaxAgeSeconds>3000</MaxAgeSeconds>
+        <ExposeHeader>ETag</ExposeHeader>
+        <AllowedHeader>*</AllowedHeader>
+    </CORSRule>
+</CORSConfiguration>
+```
 
 * Optionally update the Lifecycle Rules for that bucket to automatically delete files after a certain period of time.
 * Create a new IAM user specifically to create a new set of keys with limited permissions for your Lambda function:
 
-    {
-        "Version": "2012-10-17",
-        "Statement": [
-            {
-                "Sid": "Stmt1486786154000",
-                "Effect": "Allow",
-                "Action": [
-                    "s3:PutObject"
-                ],
-                "Resource": [
-                    "arn:aws:s3:::BUCKET_NAME_HERE/*"
-                ]
-            }
-        ]
-    }
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Stmt1486786154000",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::BUCKET_NAME_HERE/*"
+            ]
+        }
+    ]
+}
+```
 
 * Clone this Zappa project: `git clone https://github.com/stratospark/zappa-s3-signature`
 * Create a virtual environment for this project: `virtualenv myenv`. *Note, conda environments are currently unsupported, so I utilize a Docker container with a standard Python virtualenv*
 * Install packages: `pip install -r requirements.txt`. 
 * Create an `s3-signature-config.json` file with the ACCESS_KEY and SECRET_KEY of the new User you created, for example:
 
-    {
-        "ACCESS_KEY": "AKIAIHBBHGQSUN34COPA",
-        "SECRET_KEY": "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY"
-    }
+```
+{
+    "ACCESS_KEY": "AKIAIHBBHGQSUN34COPA",
+    "SECRET_KEY": "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY"
+}
+```
 
 * Upload `s3-signature-config.json` to an S3 bucket accessible by the Lambda function, used in **remote_env** config field
 * Update the *prod* section of `zappa_settings.json` with your **aws_region**, **s3_bucket**, **cors/allowed_origin**, **remote_env**, **domain**, and **lets_encrypt_key**
@@ -107,20 +115,22 @@ You can deploy the HTML and Javascript files onto any server you have access to.
 * Create S3 bucket and upload the contents of the build folder. **Note: once again, do not use periods in the name if you want to use HTTPS/SSL**
 * Make this S3 bucket a publically available static site. Also remember to set a policy like below:
 
-    {
-        "Version": "2008-10-17",
-        "Statement": [
-            {
-                "Sid": "PublicReadForGetBucketObjects",
-                "Effect": "Allow",
-                "Principal": {
-                    "AWS": "*"
-                },
-                "Action": "s3:GetObject",
-                "Resource": "arn:aws:s3:::BUCKET_NAME/*"
-            }
-        ]
-    }
+```
+{
+    "Version": "2008-10-17",
+    "Statement": [
+        {
+            "Sid": "PublicReadForGetBucketObjects",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::BUCKET_NAME/*"
+        }
+    ]
+}
+```
 
 * Access the Fine Uploader demo page in your browser, for example: https://stratospark-serverless-uploader.s3.amazonaws.com/index.html
 * Upload a file
