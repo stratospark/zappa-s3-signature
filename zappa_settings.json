@@ -1,0 +1,33 @@
+{
+  "dev": {
+    "slim_handler": false,
+    "aws_region": "us-west-1",
+    "s3_bucket": "zappa.zip.stratospark.us",
+    "remote_env": "s3://zappa.zip.stratospark.us/s3-signature-config.json",
+    "cors": {
+      "allowed_headers": ["Content-Type", "Cache-Control", "X-Requested-With", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token"],
+      "allowed_methods": ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"],
+      "allowed_origin": "*"
+    },
+    "app_function": "my_app.app"
+    "keep_warm": true,
+    "exclude": ["*.gz", "*.dat", "*.zip"],
+    "memory_size": 128,
+    "project_name": "s3-signature",
+    "role_name": "LambdaS3SignatureRoleDev",
+    "domain": "signature-dev.stratospark.us", // Your target domain
+    "lets_encrypt_key": "account.key", // Path to account key
+    "lets_encrypt_expression": "rate(15 days)", // LE Renew schedule
+    "timeout_seconds": 60
+  },
+  "prod": {
+    "extends": "dev",
+    "domain": "signature-prod.stratospark.us", // Your target domain
+    "cors": {
+      "allowed_headers": ["Content-Type", "Cache-Control", "X-Requested-With", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token"],
+      "allowed_methods": ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"],
+      "allowed_origin": "https://stratospark-serverless-uploader.s3.amazonaws.com"
+    },
+  }
+}
+
