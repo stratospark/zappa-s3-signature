@@ -1,4 +1,5 @@
 *.pyc
 *.key
 s3-signature-config.json
+.ipynb_checkpoints
 
